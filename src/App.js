@@ -7,7 +7,7 @@ import Button from './components/Button'
 
 const famille = {
   membre1: {
-    nom: 'Anthony',
+    nom: 'Chloé',
     age: 27
   },
   membre2: {
@@ -26,7 +26,8 @@ const famille = {
 
 class App extends Component {
   state = {
-    famille
+    famille,
+    isShow: false
   }
 
   handleClick = (num) => {
@@ -34,42 +35,67 @@ class App extends Component {
     famille.membre1.age += num 
     this.setState({ famille2 })
   }
-  handleChange = event => {
-    const famille2 = {... this.state.famille}
+  handleChange = (event, id) => {
+    const famille = {... this.state.famille}
     const nom = event.target.value
-    famille.membre1.nom = nom
-    this.setState({ famille2 })
+    famille[id].nom = nom
+    this.setState({ famille })
+  }
+
+  cacherNom = id => {
+    const famille = {... this.state.famille}
+    famille[id].nom = 'X'
+    this.setState({ famille })
   }
   
+  
+  handleShowDescription = () => {
+    const isShow = !this.state.isShow
+    this.setState({ isShow })
+  }
 
   render () {  
     const {titre} = this.props
-    const { famille } = this.state
+    const { famille, isShow } = this.state
+
+    let description = null
+
+    if (isShow) {
+      description = <strong>Je suis un chat</strong>
+    } 
+
+    const liste = Object.keys(famille)
+    .map(membre =>(
+      <Membre
+        key={membre}
+        cacherNom={() => this.cacherNom(membre)}
+        handleChange={event => this.handleChange(event, membre)}
+        nom={famille[membre].nom}
+        age={famille[membre].age}/>
+    ))
+
     return (
     
       <div className = 'App'>
     <h1>{this.props.pute}</h1> 
     <input value={famille.membre1.nom} onChange={this.handleChange} type="text"/>
-        <Membre
-         nom={famille.membre1.nom}
-         age={famille.membre1.age}/>
-
-        <Membre
-         nom={famille.membre2.nom}
-         age={famille.membre2.age}/>
-
-        <Membre
-         nom={famille.membre3.nom}
-         age={famille.membre3.age}/>
-
+        {liste }
         <Membre
          nom={famille.membre4.nom}
-         age={famille.membre4.age}/>
+         age={famille.membre4.age}>
+           {
+             description
+            } <br/>
+            <div className="mt-5">
 
-         <Button action={() => this.handleClick(2)}></Button>
-
+              <button onClick={this.handleShowDescription}>MONTRER</button>
+            </div>
+            <br/>
+         </Membre>
          
-        
+
+         <Button action={() => this.handleClick(2)}/>
+            
         
 
      
